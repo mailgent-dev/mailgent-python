@@ -35,6 +35,13 @@ class SupervisorIdentitiesResource:
             self._http.post(f"/v0/platform/identities/{identity_id}/rotate-key")
         )
 
+    def update_scopes(self, identity_id: str, add_scopes: Optional[list[str]] = None,
+                      remove_scopes: Optional[list[str]] = None) -> dict[str, Any]:
+        body: dict[str, Any] = {}
+        if add_scopes: body["addScopes"] = add_scopes
+        if remove_scopes: body["removeScopes"] = remove_scopes
+        return self._http.patch(f"/v0/platform/identities/{identity_id}", json=body)
+
 
 class AsyncSupervisorIdentitiesResource:
     def __init__(self, http):
@@ -67,3 +74,10 @@ class AsyncSupervisorIdentitiesResource:
         return RotateKeyResponse.from_dict(
             await self._http.post(f"/v0/platform/identities/{identity_id}/rotate-key")
         )
+
+    async def update_scopes(self, identity_id: str, add_scopes: Optional[list[str]] = None,
+                            remove_scopes: Optional[list[str]] = None) -> dict[str, Any]:
+        body: dict[str, Any] = {}
+        if add_scopes: body["addScopes"] = add_scopes
+        if remove_scopes: body["removeScopes"] = remove_scopes
+        return await self._http.patch(f"/v0/platform/identities/{identity_id}", json=body)
