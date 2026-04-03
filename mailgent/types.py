@@ -192,6 +192,30 @@ class RotateKeyResponse:
 
 
 @dataclass
+class CalendarEvent:
+    event_id: str
+    title: str
+    description: Optional[str]
+    start_at: str
+    end_at: Optional[str]
+    is_all_day: bool
+    location: Optional[str]
+    metadata: Optional[dict[str, Any]]
+    created_at: str
+    updated_at: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> CalendarEvent:
+        return cls(
+            event_id=data["eventId"], title=data["title"],
+            description=data.get("description"), start_at=data["startAt"],
+            end_at=data.get("endAt"), is_all_day=data.get("isAllDay", False),
+            location=data.get("location"), metadata=data.get("metadata"),
+            created_at=data["createdAt"], updated_at=data["updatedAt"],
+        )
+
+
+@dataclass
 class ActivityLog:
     id: str
     action: str

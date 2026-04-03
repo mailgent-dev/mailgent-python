@@ -9,6 +9,7 @@ from mailgent.resources.mail import MailResource, AsyncMailResource
 from mailgent.resources.vault import VaultResource, AsyncVaultResource
 from mailgent.resources.logs import LogsResource, AsyncLogsResource
 from mailgent.resources.did import DidResource, AsyncDidResource
+from mailgent.resources.calendar import CalendarResource, AsyncCalendarResource
 
 
 class Mailgent:
@@ -29,6 +30,7 @@ class Mailgent:
         self.vault = VaultResource(http)
         self.logs = LogsResource(http)
         self.did = DidResource(http)
+        self.calendar = CalendarResource(http)
         self._http = http
 
     def close(self) -> None:
@@ -59,6 +61,7 @@ class AsyncMailgent:
         self.vault = AsyncVaultResource(http)
         self.logs = AsyncLogsResource(http)
         self.did = AsyncDidResource(http)
+        self.calendar = AsyncCalendarResource(http)
         self._http = http
 
     async def close(self) -> None:

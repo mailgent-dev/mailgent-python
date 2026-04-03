@@ -4,6 +4,7 @@ from mailgent.types import (
     MessageResponse, ThreadResponse, ThreadDetailResponse,
     CredentialMetadata, CredentialWithData, IdentityResponse,
     IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse,
+    CalendarEvent,
     ActivityLog, LogsStats, TotpResponse, DidDocument,
 )
 from mailgent._errors import MailgentError
@@ -17,5 +18,6 @@ __all__ = [
     "MessageResponse", "ThreadResponse", "ThreadDetailResponse",
     "CredentialMetadata", "CredentialWithData", "IdentityResponse",
     "IdentitySummary", "IdentityDetail", "CreateIdentityResponse", "RotateKeyResponse",
+    "CalendarEvent",
     "ActivityLog", "LogsStats", "TotpResponse", "DidDocument",
 ]
