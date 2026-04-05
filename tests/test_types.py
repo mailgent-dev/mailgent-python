@@ -1,4 +1,4 @@
-from mailgent.types import (
+from hivekey.types import (
     MessageResponse, ThreadDetailResponse, CredentialWithData,
     IdentityResponse, LogsStats, TotpResponse, DidDocument,
 )
@@ -78,7 +78,7 @@ class TestDidDocument:
     def test_from_dict(self):
         doc = DidDocument.from_dict({
             "@context": ["https://www.w3.org/ns/did/v1"], "id": "did:web:api.mailgent.dev",
-            "service": [{"id": "#mcp", "type": "MCPServer", "serviceEndpoint": "https://api.mailgent.dev/mcp"}],
+            "service": [{"id": "#mcp", "type": "MCPServer", "serviceEndpoint": "https://api.hivekey.ai/mcp"}],
         })
         assert doc.id == "did:web:api.mailgent.dev"
         assert len(doc.service) == 1

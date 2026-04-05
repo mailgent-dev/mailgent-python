@@ -1,5 +1,5 @@
 from __future__ import annotations
-from mailgent.types import DidDocument
+from hivekey.types import DidDocument
 
 
 class DidResource:

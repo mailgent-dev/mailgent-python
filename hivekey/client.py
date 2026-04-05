@@ -3,26 +3,26 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from mailgent._http import SyncHttpClient, AsyncHttpClient, DEFAULT_BASE_URL
-from mailgent.resources.identity import IdentityResource, AsyncIdentityResource
-from mailgent.resources.mail import MailResource, AsyncMailResource
-from mailgent.resources.vault import VaultResource, AsyncVaultResource
-from mailgent.resources.logs import LogsResource, AsyncLogsResource
-from mailgent.resources.did import DidResource, AsyncDidResource
-from mailgent.resources.calendar import CalendarResource, AsyncCalendarResource
+from hivekey._http import SyncHttpClient, AsyncHttpClient, DEFAULT_BASE_URL
+from hivekey.resources.identity import IdentityResource, AsyncIdentityResource
+from hivekey.resources.mail import MailResource, AsyncMailResource
+from hivekey.resources.vault import VaultResource, AsyncVaultResource
+from hivekey.resources.logs import LogsResource, AsyncLogsResource
+from hivekey.resources.did import DidResource, AsyncDidResource
+from hivekey.resources.calendar import CalendarResource, AsyncCalendarResource
 
 
-class Mailgent:
-    """Synchronous Mailgent API client."""
+class Hivekey:
+    """Synchronous Hivekey API client."""
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None,
                  timeout: float = 30.0) -> None:
-        resolved_key = api_key or os.environ.get("MAILGENT_API_KEY")
+        resolved_key = api_key or os.environ.get("HIVEKEY_API_KEY")
         if not resolved_key:
-            raise ValueError("API key is required. Pass api_key= or set MAILGENT_API_KEY env var.")
+            raise ValueError("API key is required. Pass api_key= or set HIVEKEY_API_KEY env var.")
 
         http = SyncHttpClient(
-            base_url=base_url or os.environ.get("MAILGENT_API_URL", DEFAULT_BASE_URL),
+            base_url=base_url or os.environ.get("HIVEKEY_API_URL", DEFAULT_BASE_URL),
             api_key=resolved_key, timeout=timeout,
         )
         self.identity = IdentityResource(http)
@@ -43,17 +43,17 @@ class Mailgent:
         self.close()
 
 
-class AsyncMailgent:
-    """Asynchronous Mailgent API client."""
+class AsyncHivekey:
+    """Asynchronous Hivekey API client."""
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None,
                  timeout: float = 30.0) -> None:
-        resolved_key = api_key or os.environ.get("MAILGENT_API_KEY")
+        resolved_key = api_key or os.environ.get("HIVEKEY_API_KEY")
         if not resolved_key:
-            raise ValueError("API key is required. Pass api_key= or set MAILGENT_API_KEY env var.")
+            raise ValueError("API key is required. Pass api_key= or set HIVEKEY_API_KEY env var.")
 
         http = AsyncHttpClient(
-            base_url=base_url or os.environ.get("MAILGENT_API_URL", DEFAULT_BASE_URL),
+            base_url=base_url or os.environ.get("HIVEKEY_API_URL", DEFAULT_BASE_URL),
             api_key=resolved_key, timeout=timeout,
         )
         self.identity = AsyncIdentityResource(http)

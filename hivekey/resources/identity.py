@@ -1,5 +1,5 @@
 from __future__ import annotations
-from mailgent.types import IdentityResponse
+from hivekey.types import IdentityResponse
 
 
 class IdentityResource:

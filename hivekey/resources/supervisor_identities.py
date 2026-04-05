@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from mailgent.types import IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse
+from hivekey.types import IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse
 
 
 class SupervisorIdentitiesResource:

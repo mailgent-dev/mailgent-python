@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from mailgent.types import CredentialMetadata, CredentialWithData, TotpResponse
+from hivekey.types import CredentialMetadata, CredentialWithData, TotpResponse
 
 
 class VaultResource:

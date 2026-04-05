@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from mailgent.types import CalendarEvent
+from hivekey.types import CalendarEvent
 
 
 class CalendarResource:

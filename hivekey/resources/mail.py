@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from mailgent.types import MessageResponse, ThreadResponse, ThreadDetailResponse
+from hivekey.types import MessageResponse, ThreadResponse, ThreadDetailResponse
 
 
 class MailResource:

@@ -1,20 +1,20 @@
-from mailgent.client import Mailgent, AsyncMailgent
-from mailgent.supervisor_client import MailgentSupervisor, AsyncMailgentSupervisor
-from mailgent.types import (
+from hivekey.client import Hivekey, AsyncHivekey
+from hivekey.supervisor_client import HivekeySupervisor, AsyncHivekeySupervisor
+from hivekey.types import (
     MessageResponse, ThreadResponse, ThreadDetailResponse,
     CredentialMetadata, CredentialWithData, IdentityResponse,
     IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse,
     CalendarEvent,
     ActivityLog, LogsStats, TotpResponse, DidDocument,
 )
-from mailgent._errors import MailgentError
+from hivekey._errors import HivekeyError
 
 __version__ = "0.2.0"
 
 __all__ = [
-    "Mailgent", "AsyncMailgent",
-    "MailgentSupervisor", "AsyncMailgentSupervisor",
-    "MailgentError",
+    "Hivekey", "AsyncHivekey",
+    "HivekeySupervisor", "AsyncHivekeySupervisor",
+    "HivekeyError",
     "MessageResponse", "ThreadResponse", "ThreadDetailResponse",
     "CredentialMetadata", "CredentialWithData", "IdentityResponse",
     "IdentitySummary", "IdentityDetail", "CreateIdentityResponse", "RotateKeyResponse",

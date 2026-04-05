@@ -3,21 +3,21 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from mailgent._http import SyncHttpClient, AsyncHttpClient, DEFAULT_BASE_URL
-from mailgent.resources.supervisor_identities import SupervisorIdentitiesResource, AsyncSupervisorIdentitiesResource
+from hivekey._http import SyncHttpClient, AsyncHttpClient, DEFAULT_BASE_URL
+from hivekey.resources.supervisor_identities import SupervisorIdentitiesResource, AsyncSupervisorIdentitiesResource
 
 
-class MailgentSupervisor:
-    """Synchronous Mailgent Supervisor client for identity management."""
+class HivekeySupervisor:
+    """Synchronous Hivekey Supervisor client for identity management."""
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None,
                  timeout: float = 30.0) -> None:
-        resolved_key = api_key or os.environ.get("MAILGENT_SUPERVISOR_KEY")
+        resolved_key = api_key or os.environ.get("HIVEKEY_SUPERVISOR_KEY")
         if not resolved_key:
-            raise ValueError("Supervisor key is required. Pass api_key= or set MAILGENT_SUPERVISOR_KEY env var.")
+            raise ValueError("Supervisor key is required. Pass api_key= or set HIVEKEY_SUPERVISOR_KEY env var.")
 
         http = SyncHttpClient(
-            base_url=base_url or os.environ.get("MAILGENT_API_URL", DEFAULT_BASE_URL),
+            base_url=base_url or os.environ.get("HIVEKEY_API_URL", DEFAULT_BASE_URL),
             api_key=resolved_key, timeout=timeout,
         )
         self.identities = SupervisorIdentitiesResource(http)
@@ -33,17 +33,17 @@ class MailgentSupervisor:
         self.close()
 
 
-class AsyncMailgentSupervisor:
-    """Asynchronous Mailgent Supervisor client for identity management."""
+class AsyncHivekeySupervisor:
+    """Asynchronous Hivekey Supervisor client for identity management."""
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None,
                  timeout: float = 30.0) -> None:
-        resolved_key = api_key or os.environ.get("MAILGENT_SUPERVISOR_KEY")
+        resolved_key = api_key or os.environ.get("HIVEKEY_SUPERVISOR_KEY")
         if not resolved_key:
-            raise ValueError("Supervisor key is required. Pass api_key= or set MAILGENT_SUPERVISOR_KEY env var.")
+            raise ValueError("Supervisor key is required. Pass api_key= or set HIVEKEY_SUPERVISOR_KEY env var.")
 
         http = AsyncHttpClient(
-            base_url=base_url or os.environ.get("MAILGENT_API_URL", DEFAULT_BASE_URL),
+            base_url=base_url or os.environ.get("HIVEKEY_API_URL", DEFAULT_BASE_URL),
             api_key=resolved_key, timeout=timeout,
         )
         self.identities = AsyncSupervisorIdentitiesResource(http)
