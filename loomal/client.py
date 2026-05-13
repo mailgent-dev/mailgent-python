@@ -10,6 +10,7 @@ from loomal.resources.vault import VaultResource, AsyncVaultResource
 from loomal.resources.logs import LogsResource, AsyncLogsResource
 from loomal.resources.did import DidResource, AsyncDidResource
 from loomal.resources.calendar import CalendarResource, AsyncCalendarResource
+from loomal.resources.payments import PaymentsResource, AsyncPaymentsResource
 
 
 class Loomal:
@@ -31,6 +32,7 @@ class Loomal:
         self.logs = LogsResource(http)
         self.did = DidResource(http)
         self.calendar = CalendarResource(http)
+        self.payments = PaymentsResource(http)
         self._http = http
 
     def close(self) -> None:
@@ -62,6 +64,7 @@ class AsyncLoomal:
         self.logs = AsyncLogsResource(http)
         self.did = AsyncDidResource(http)
         self.calendar = AsyncCalendarResource(http)
+        self.payments = AsyncPaymentsResource(http)
         self._http = http
 
     async def close(self) -> None:

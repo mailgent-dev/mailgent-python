@@ -347,3 +347,156 @@ class DidDocument:
             assertion_method=data.get("assertionMethod", []),
             service=data.get("service", []),
         )
+
+
+@dataclass
+class PaymentEndpointSummary:
+    id: str
+    url_pattern: str
+    price_usdc: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> PaymentEndpointSummary:
+        return cls(
+            id=data["id"],
+            url_pattern=data["urlPattern"],
+            price_usdc=data["priceUsdc"],
+        )
+
+
+@dataclass
+class PaymentSummary:
+    """A row from ``GET /v0/payments``.
+
+    ``amount_usdc_raw`` is raw USDC units (6 decimals); divide by
+    1_000_000 for the decimal value. ``status`` is one of ``settled``,
+    ``verified``, ``failed``, or ``unpaid_delivered``.
+    """
+
+    id: str
+    endpoint_id: Optional[str]
+    endpoint: Optional[PaymentEndpointSummary]
+    network: str
+    payer_address: str
+    recipient_address: str
+    amount_usdc_raw: str
+    tx_hash: Optional[str]
+    status: str
+    resource_url: str
+    failure_reason: Optional[str]
+    created_at: str
+    settled_at: Optional[str]
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> PaymentSummary:
+        ep = data.get("endpoint")
+        return cls(
+            id=data["id"],
+            endpoint_id=data.get("endpointId"),
+            endpoint=PaymentEndpointSummary.from_dict(ep) if ep else None,
+            network=data["network"],
+            payer_address=data["payerAddress"],
+            recipient_address=data["recipientAddress"],
+            amount_usdc_raw=data["amountUsdcRaw"],
+            tx_hash=data.get("txHash"),
+            status=data["status"],
+            resource_url=data["resourceUrl"],
+            failure_reason=data.get("failureReason"),
+            created_at=data["createdAt"],
+            settled_at=data.get("settledAt"),
+        )
+
+
+@dataclass
+class PaymentReceiptBody:
+    version: int
+    payment_in_id: str
+    endpoint_id: Optional[str]
+    identity_id: str
+    payer_address: str
+    recipient_address: str
+    amount_usdc_raw: str
+    network: str
+    tx_hash: str
+    timestamp: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> PaymentReceiptBody:
+        return cls(
+            version=data["version"],
+            payment_in_id=data["paymentInId"],
+            endpoint_id=data.get("endpointId"),
+            identity_id=data["identityId"],
+            payer_address=data["payerAddress"],
+            recipient_address=data["recipientAddress"],
+            amount_usdc_raw=data["amountUsdcRaw"],
+            network=data["network"],
+            tx_hash=data["txHash"],
+            timestamp=data["timestamp"],
+        )
+
+
+@dataclass
+class PaymentReceipt:
+    """Ed25519-signed receipt — seller-issued proof of payment.
+
+    ``public_key`` is multibase-encoded (``z6Mk…``). ``did`` is the URI
+    of the signing Identity, e.g. ``did:web:loomal.ai:identities:id-…``.
+    """
+
+    body: PaymentReceiptBody
+    signature: str
+    public_key: str
+    did: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> PaymentReceipt:
+        return cls(
+            body=PaymentReceiptBody.from_dict(data["body"]),
+            signature=data["signature"],
+            public_key=data["publicKey"],
+            did=data["did"],
+        )
+
+
+@dataclass
+class PaymentDetail:
+    """A single payment from ``GET /v0/payments/:id`` with the full
+    Ed25519-signed receipt and authorization nonce."""
+
+    id: str
+    endpoint_id: Optional[str]
+    endpoint: Optional[PaymentEndpointSummary]
+    network: str
+    payer_address: str
+    recipient_address: str
+    amount_usdc_raw: str
+    authorization_nonce: str
+    tx_hash: Optional[str]
+    status: str
+    resource_url: str
+    failure_reason: Optional[str]
+    created_at: str
+    settled_at: Optional[str]
+    signed_receipt: PaymentReceipt
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> PaymentDetail:
+        ep = data.get("endpoint")
+        return cls(
+            id=data["id"],
+            endpoint_id=data.get("endpointId"),
+            endpoint=PaymentEndpointSummary.from_dict(ep) if ep else None,
+            network=data["network"],
+            payer_address=data["payerAddress"],
+            recipient_address=data["recipientAddress"],
+            amount_usdc_raw=data["amountUsdcRaw"],
+            authorization_nonce=data["authorizationNonce"],
+            tx_hash=data.get("txHash"),
+            status=data["status"],
+            resource_url=data["resourceUrl"],
+            failure_reason=data.get("failureReason"),
+            created_at=data["createdAt"],
+            settled_at=data.get("settledAt"),
+            signed_receipt=PaymentReceipt.from_dict(data["signedReceipt"]),
+        )

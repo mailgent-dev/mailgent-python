@@ -9,6 +9,8 @@ from loomal.types import (
     IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse,
     CalendarEvent,
     ActivityLog, LogsStats, TotpResponse, TotpBackupResponse, DidDocument,
+    PaymentEndpointSummary, PaymentSummary, PaymentReceiptBody,
+    PaymentReceipt, PaymentDetail,
 )
 from loomal._errors import LoomalError
 
@@ -26,4 +28,6 @@ __all__ = [
     "IdentitySummary", "IdentityDetail", "CreateIdentityResponse", "RotateKeyResponse",
     "CalendarEvent",
     "ActivityLog", "LogsStats", "TotpResponse", "DidDocument",
+    "PaymentEndpointSummary", "PaymentSummary", "PaymentReceiptBody",
+    "PaymentReceipt", "PaymentDetail",
 ]
