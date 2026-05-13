@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "loomal-sdk"
-version = "0.4.1"
+version = "0.5.0"
 description = "Official Python SDK for the Loomal API — identity, mail, vault, calendar, and Loomal Pay (x402 paywall) for AI agents"
 readme = "README.md"
 requires-python = ">=3.9"
