@@ -21,7 +21,7 @@ full handshake — discover the 402 challenge, enforce mandate caps, sign
 EIP-3009, retry, and record — then returns a discriminated result.
 
 ```python
-result = client.payments.pay(url="https://seller.example.com/api")
+result = client.payments.pay(url="https://api.example.com")
 if result["ok"]:
     print(result["txHash"], result["cost"]["amountUsdc"])
 else:

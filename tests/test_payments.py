@@ -16,7 +16,7 @@ PAY_SUCCESS_BODY = {
     "txHash": "0xtxhash",
     "payer": "0xpayer",
     "recipient": "0xrecipient",
-    "resource": "https://seller.example.com/search",
+    "resource": "https://api.example.com/search",
     "balanceAfter": {"usdc": "0.95", "usdcRaw": "950000"},
     "mandate": {
         "mandateId": "m-1",
@@ -32,7 +32,7 @@ PAY_FAILURE_BODY = {
     "code": "mandate_per_call_exceeded",
     "message": "Price 0.50 USDC exceeds maxPerCallUsdc 0.10",
     "hint": "Raise maxPerCallUsdc on the mandate or pay a cheaper endpoint",
-    "resource": "https://seller.example.com/search",
+    "resource": "https://api.example.com/search",
     "cost": {"amountUsdc": "0.50", "network": "base"},
 }
 
@@ -43,8 +43,8 @@ ACTIVITY_BODY = {
             "direction": "out",
             "network": "base",
             "amountUsdcRaw": "50000",
-            "counterparty": "0xseller",
-            "resource": "https://seller.example.com/search",
+            "counterparty": "0xrecipient",
+            "resource": "https://api.example.com/search",
             "txHash": "0xtxout",
             "status": "settled",
             "failureReason": None,
@@ -145,7 +145,7 @@ class TestPaymentsResource:
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
         client = Mailgent(api_key="loid-test")
-        result = client.payments.pay(url="https://seller.example.com/search")
+        result = client.payments.pay(url="https://api.example.com/search")
 
         assert result["ok"] is True
         assert result["txHash"] == "0xtxhash"
@@ -153,7 +153,7 @@ class TestPaymentsResource:
         assert result["content"] == {"result": "ok"}
 
         body = json.loads(route.calls[0].request.content)
-        assert body["url"] == "https://seller.example.com/search"
+        assert body["url"] == "https://api.example.com/search"
         assert "dryRun" not in body
         client.close()
 
@@ -163,7 +163,7 @@ class TestPaymentsResource:
             return_value=httpx.Response(402, json=PAY_FAILURE_BODY)
         )
         client = Mailgent(api_key="loid-test")
-        result = client.payments.pay(url="https://seller.example.com/search")
+        result = client.payments.pay(url="https://api.example.com/search")
 
         assert result["ok"] is False
         assert result["code"] == "mandate_per_call_exceeded"
@@ -176,7 +176,7 @@ class TestPaymentsResource:
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
         client = Mailgent(api_key="loid-test")
-        client.payments.pay(url="https://seller.example.com/search", dry_run=True)
+        client.payments.pay(url="https://api.example.com/search", dry_run=True)
 
         body = json.loads(route.calls[0].request.content)
         assert body["dryRun"] is True
@@ -189,7 +189,7 @@ class TestPaymentsResource:
         )
         client = Mailgent(api_key="loid-test")
         with pytest.raises(MailgentApiError, match="discriminator"):
-            client.payments.pay(url="https://seller.example.com/search")
+            client.payments.pay(url="https://api.example.com/search")
         client.close()
 
     @respx.mock
@@ -311,7 +311,7 @@ class TestAsyncPaymentsResource:
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
         client = AsyncMailgent(api_key="loid-test")
-        result = await client.payments.pay(url="https://seller.example.com/search")
+        result = await client.payments.pay(url="https://api.example.com/search")
         assert result["ok"] is True
         assert result["txHash"] == "0xtxhash"
         await client.close()

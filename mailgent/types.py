@@ -150,15 +150,8 @@ class CredentialWithData(CredentialMetadata):
         )
 
 
+#: Project role as returned by the API. ``"BUYER"`` is the default.
 IdentityPurpose = Literal["SELLER", "BUYER"]
-"""SELLER projects accept x402 payments on registered endpoints (server-side
-middleware). BUYER projects spend via mandates and own the agent
-infrastructure (inbox, vault, calendar, identity signing) used by
-autonomous agents.
-
-Picked at project creation; BUYER is the default. Branch on this when your
-code needs to behave differently per role.
-"""
 
 
 @dataclass
@@ -168,7 +161,7 @@ class IdentityResponse:
     email: str
     display_name: str
     type: str
-    #: ``"SELLER"`` or ``"BUYER"``. Set at project creation; BUYER is the default.
+    #: Project role as returned by the API. BUYER is the default.
     purpose: IdentityPurpose
     scopes: list[str]
     usage_count: int
@@ -457,7 +450,7 @@ class PaymentReceiptBody:
 
 @dataclass
 class PaymentReceipt:
-    """Ed25519-signed receipt — seller-issued proof of payment.
+    """Ed25519-signed receipt — proof of payment for a settled x402 call.
 
     ``public_key`` is multibase-encoded (``z6Mk…``). ``did`` is the URI
     of the signing Identity, e.g. ``did:web:mailgent.dev:identities:id-…``.
@@ -589,7 +582,7 @@ class PaymentsPayMandate(TypedDict):
 
 class PaymentsPaySuccess(TypedDict, total=False):
     """Returned when ``ok`` is True. ``content`` is the parsed JSON body
-    from the seller when ``application/json``; ``contentText`` carries the
+    from the paid API when ``application/json``; ``contentText`` carries the
     raw body otherwise."""
     ok: Literal[True]
     status: int
@@ -631,7 +624,7 @@ class PaymentsPayParams(TypedDict, total=False):
     dryRun: bool
 
 
-# --- Bank-statement-style activity feed (buyer + seller, merged) ---
+# --- Bank-statement-style activity feed (payments out + in, merged) ---
 
 
 class _PaymentActivityCommon(TypedDict):
