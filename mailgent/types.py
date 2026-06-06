@@ -151,7 +151,7 @@ class CredentialWithData(CredentialMetadata):
 
 
 #: Project role as returned by the API. ``"BUYER"`` is the default.
-IdentityPurpose = Literal["SELLER", "BUYER"]
+IdentityPurpose = Literal["BUYER"]
 
 
 @dataclass
