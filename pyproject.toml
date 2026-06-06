@@ -3,15 +3,15 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "loomal-sdk"
+name = "mailgent-sdk"
 version = "0.6.2"
-description = "Official Python SDK for the Loomal API — identity, mail, vault, calendar, and Loomal Pay (x402 paywall) for AI agents"
+description = "Official Python SDK for the Mailgent API — identity, mail, vault, calendar, and buyer x402 payments for AI agents"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Loomal" }]
+authors = [{ name = "Mailgent" }]
 keywords = [
-    "loomal",
+    "mailgent",
     "ai",
     "agent",
     "email",
@@ -20,10 +20,8 @@ keywords = [
     "vault",
     "sdk",
     "x402",
-    "paywall",
     "usdc",
     "payments",
-    "fastapi",
 ]
 dependencies = ["httpx>=0.27"]
 classifiers = [
@@ -43,15 +41,14 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://loomal.ai"
-Documentation = "https://docs.loomal.ai"
-Repository = "https://github.com/loomal-ai/loomal-python"
-Issues = "https://github.com/loomal-ai/loomal-python/issues"
+Homepage = "https://mailgent.dev"
+Documentation = "https://docs.mailgent.dev"
+Repository = "https://github.com/mailgent-dev/mailgent-python"
+Issues = "https://github.com/mailgent-dev/mailgent-python/issues"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "respx>=0.21", "build", "twine", "fastapi>=0.110"]
-fastapi = ["fastapi>=0.100"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "respx>=0.21", "build", "twine"]
 
 [tool.setuptools.packages.find]
-include = ["loomal*"]
+include = ["mailgent*"]
 exclude = ["tests*"]

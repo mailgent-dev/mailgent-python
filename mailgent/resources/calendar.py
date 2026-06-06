@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from loomal.types import CalendarEvent
+from mailgent.types import CalendarEvent
 
 
 class CalendarResource:

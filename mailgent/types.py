@@ -151,10 +151,10 @@ class CredentialWithData(CredentialMetadata):
 
 
 IdentityPurpose = Literal["SELLER", "BUYER"]
-"""SELLER projects accept x402 payments on registered endpoints (their server
-imports loomal.paywall.* middleware). BUYER projects spend via mandates and
-own the agent infrastructure (inbox, vault, calendar, identity signing) used
-by autonomous agents.
+"""SELLER projects accept x402 payments on registered endpoints (server-side
+middleware). BUYER projects spend via mandates and own the agent
+infrastructure (inbox, vault, calendar, identity signing) used by
+autonomous agents.
 
 Picked at project creation; BUYER is the default. Branch on this when your
 code needs to behave differently per role.
@@ -460,7 +460,7 @@ class PaymentReceipt:
     """Ed25519-signed receipt — seller-issued proof of payment.
 
     ``public_key`` is multibase-encoded (``z6Mk…``). ``did`` is the URI
-    of the signing Identity, e.g. ``did:web:loomal.ai:identities:id-…``.
+    of the signing Identity, e.g. ``did:web:mailgent.dev:identities:id-…``.
     """
 
     body: PaymentReceiptBody

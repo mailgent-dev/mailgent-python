@@ -3,8 +3,8 @@ import json
 import pytest
 import respx
 
-from loomal import Loomal, AsyncLoomal, LoomalError
-from loomal.types import PaymentDetail, PaymentSummary
+from mailgent import Mailgent, AsyncMailgent, MailgentApiError
+from mailgent.types import PaymentDetail, PaymentSummary
 
 
 PAY_SUCCESS_BODY = {
@@ -70,22 +70,6 @@ ACTIVITY_BODY = {
 }
 
 
-CHALLENGE_BODY = {
-    "x402Version": 1,
-    "accepts": [{
-        "scheme": "exact",
-        "network": "base",
-        "maxAmountRequired": "50000",
-        "resource": "https://example.com/api",
-        "description": "Test API",
-        "mimeType": "",
-        "payTo": "0xabc",
-        "maxTimeoutSeconds": 60,
-        "asset": "0xusdc",
-        "extra": {"name": "USD Coin", "version": "2"},
-    }],
-}
-
 LIST_ROW = {
     "id": "pay-1",
     "endpointId": None,
@@ -120,84 +104,23 @@ DETAIL_BODY = {
         },
         "signature": "base64sig",
         "publicKey": "z6Mkpub",
-        "did": "did:web:loomal.ai:identities:id-1",
+        "did": "did:web:mailgent.dev:identities:id-1",
     },
 }
 
 
 class TestPaymentsResource:
     def test_client_has_payments_resource(self):
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         assert client.payments is not None
         client.close()
 
     @respx.mock
-    def test_challenge(self):
-        route = respx.post("https://api.loomal.ai/v0/payments/challenge").mock(
-            return_value=httpx.Response(200, json=CHALLENGE_BODY)
-        )
-        client = Loomal(api_key="loid-test")
-        result = client.payments.challenge(amount="0.05", resource="https://example.com/api")
-
-        assert result["x402Version"] == 1
-        assert result["accepts"][0]["maxAmountRequired"] == "50000"
-
-        body = json.loads(route.calls[0].request.content)
-        assert body["amount"] == "0.05"
-        assert body["network"] == "base"
-        assert body["resource"] == "https://example.com/api"
-        client.close()
-
-    @respx.mock
-    def test_redeem_success(self):
-        route = respx.post("https://api.loomal.ai/v0/payments/redeem").mock(
-            return_value=httpx.Response(200, json={
-                "ok": True,
-                "paymentResponse": "base64-response",
-                "txHash": "0xtxhash",
-                "payer": "0xpayer",
-                "paymentInId": "pay-1",
-            })
-        )
-        client = Loomal(api_key="loid-test")
-        result = client.payments.redeem(
-            payment_header="base64-header",
-            resource="https://example.com/api",
-            amount="0.05",
-        )
-
-        assert result["ok"] is True
-        assert result["txHash"] == "0xtxhash"
-
-        body = json.loads(route.calls[0].request.content)
-        assert body["paymentHeader"] == "base64-header"
-        assert body["amount"] == "0.05"
-        assert body["network"] == "base"
-        client.close()
-
-    @respx.mock
-    def test_redeem_rejection(self):
-        respx.post("https://api.loomal.ai/v0/payments/redeem").mock(
-            return_value=httpx.Response(200, json={
-                "ok": False, "stage": "verify", "reason": "invalid_signature",
-            })
-        )
-        client = Loomal(api_key="loid-test")
-        result = client.payments.redeem(
-            payment_header="bad",
-            resource="https://example.com/api",
-            amount="0.05",
-        )
-        assert result["ok"] is False
-        assert result["stage"] == "verify"
-        client.close()
-
-    @respx.mock
     def test_list(self):
-        respx.get("https://api.loomal.ai/v0/payments").mock(
+        respx.get("https://api.mailgent.dev/v0/payments").mock(
             return_value=httpx.Response(200, json={"payments": [LIST_ROW], "count": 1})
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         result = client.payments.list()
 
         assert result["count"] == 1
@@ -207,10 +130,10 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_list_with_limit(self):
-        route = respx.get("https://api.loomal.ai/v0/payments").mock(
+        route = respx.get("https://api.mailgent.dev/v0/payments").mock(
             return_value=httpx.Response(200, json={"payments": [], "count": 0})
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         client.payments.list(limit=50)
 
         assert "limit=50" in str(route.calls[0].request.url)
@@ -218,10 +141,10 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_pay_success(self):
-        route = respx.post("https://api.loomal.ai/v0/payments/pay").mock(
+        route = respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         result = client.payments.pay(url="https://seller.example.com/search")
 
         assert result["ok"] is True
@@ -236,10 +159,10 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_pay_failure_pass_through(self):
-        respx.post("https://api.loomal.ai/v0/payments/pay").mock(
+        respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(402, json=PAY_FAILURE_BODY)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         result = client.payments.pay(url="https://seller.example.com/search")
 
         assert result["ok"] is False
@@ -249,10 +172,10 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_pay_forwards_dry_run(self):
-        route = respx.post("https://api.loomal.ai/v0/payments/pay").mock(
+        route = respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         client.payments.pay(url="https://seller.example.com/search", dry_run=True)
 
         body = json.loads(route.calls[0].request.content)
@@ -261,20 +184,20 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_pay_raises_on_malformed_body(self):
-        respx.post("https://api.loomal.ai/v0/payments/pay").mock(
+        respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(401, json={"error": "unauthorized", "message": "missing scope"})
         )
-        client = Loomal(api_key="loid-test")
-        with pytest.raises(LoomalError, match="discriminator"):
+        client = Mailgent(api_key="loid-test")
+        with pytest.raises(MailgentApiError, match="discriminator"):
             client.payments.pay(url="https://seller.example.com/search")
         client.close()
 
     @respx.mock
     def test_activity(self):
-        route = respx.get("https://api.loomal.ai/v0/payments/activity").mock(
+        route = respx.get("https://api.mailgent.dev/v0/payments/activity").mock(
             return_value=httpx.Response(200, json=ACTIVITY_BODY)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         result = client.payments.activity()
 
         assert result["count"] == 2
@@ -286,10 +209,10 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_activity_with_limit(self):
-        route = respx.get("https://api.loomal.ai/v0/payments/activity").mock(
+        route = respx.get("https://api.mailgent.dev/v0/payments/activity").mock(
             return_value=httpx.Response(200, json={"activity": [], "count": 0})
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         client.payments.activity(limit=25)
 
         assert "limit=25" in str(route.calls[0].request.url)
@@ -315,10 +238,10 @@ class TestPaymentsResource:
             "revokedAt": None,
             "createdAt": "2026-05-12T10:00:00.000Z",
         }
-        route = respx.post("https://api.loomal.ai/v0/payments/mandates").mock(
+        route = respx.post("https://api.mailgent.dev/v0/payments/mandates").mock(
             return_value=httpx.Response(200, json=body)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         m = client.payments.mandates.create(
             max_per_call_usdc="0.10",
             daily_cap_usdc="1.00",
@@ -335,23 +258,23 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_mandates_list(self):
-        respx.get("https://api.loomal.ai/v0/payments/mandates").mock(
+        respx.get("https://api.mailgent.dev/v0/payments/mandates").mock(
             return_value=httpx.Response(200, json={"mandates": []})
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         result = client.payments.mandates.list()
         assert result == {"mandates": []}
         client.close()
 
     @respx.mock
     def test_mandates_get_and_revoke(self):
-        get_route = respx.get("https://api.loomal.ai/v0/payments/mandates/m_abc").mock(
+        get_route = respx.get("https://api.mailgent.dev/v0/payments/mandates/m_abc").mock(
             return_value=httpx.Response(200, json={"mandateId": "m_abc"})
         )
-        delete_route = respx.delete("https://api.loomal.ai/v0/payments/mandates/m_abc").mock(
+        delete_route = respx.delete("https://api.mailgent.dev/v0/payments/mandates/m_abc").mock(
             return_value=httpx.Response(204)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         m = client.payments.mandates.get("m_abc")
         assert m["mandateId"] == "m_abc"
         client.payments.mandates.revoke("m_abc")
@@ -362,10 +285,10 @@ class TestPaymentsResource:
 
     @respx.mock
     def test_get(self):
-        respx.get("https://api.loomal.ai/v0/payments/pay-1").mock(
+        respx.get("https://api.mailgent.dev/v0/payments/pay-1").mock(
             return_value=httpx.Response(200, json=DETAIL_BODY)
         )
-        client = Loomal(api_key="loid-test")
+        client = Mailgent(api_key="loid-test")
         result = client.payments.get("pay-1")
 
         assert isinstance(result, PaymentDetail)
@@ -378,27 +301,16 @@ class TestPaymentsResource:
 
 class TestAsyncPaymentsResource:
     def test_async_client_has_payments_resource(self):
-        client = AsyncLoomal(api_key="loid-test")
+        client = AsyncMailgent(api_key="loid-test")
         assert client.payments is not None
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_challenge_async(self):
-        respx.post("https://api.loomal.ai/v0/payments/challenge").mock(
-            return_value=httpx.Response(200, json=CHALLENGE_BODY)
-        )
-        client = AsyncLoomal(api_key="loid-test")
-        result = await client.payments.challenge(amount="0.05", resource="https://example.com/api")
-        assert result["x402Version"] == 1
-        await client.close()
-
-    @respx.mock
-    @pytest.mark.asyncio
     async def test_pay_async(self):
-        respx.post("https://api.loomal.ai/v0/payments/pay").mock(
+        respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
-        client = AsyncLoomal(api_key="loid-test")
+        client = AsyncMailgent(api_key="loid-test")
         result = await client.payments.pay(url="https://seller.example.com/search")
         assert result["ok"] is True
         assert result["txHash"] == "0xtxhash"
@@ -407,10 +319,10 @@ class TestAsyncPaymentsResource:
     @respx.mock
     @pytest.mark.asyncio
     async def test_activity_async(self):
-        respx.get("https://api.loomal.ai/v0/payments/activity").mock(
+        respx.get("https://api.mailgent.dev/v0/payments/activity").mock(
             return_value=httpx.Response(200, json=ACTIVITY_BODY)
         )
-        client = AsyncLoomal(api_key="loid-test")
+        client = AsyncMailgent(api_key="loid-test")
         result = await client.payments.activity(limit=10)
         assert result["count"] == 2
         await client.close()
@@ -418,11 +330,11 @@ class TestAsyncPaymentsResource:
     @respx.mock
     @pytest.mark.asyncio
     async def test_get_async(self):
-        respx.get("https://api.loomal.ai/v0/payments/pay-1").mock(
+        respx.get("https://api.mailgent.dev/v0/payments/pay-1").mock(
             return_value=httpx.Response(200, json=DETAIL_BODY)
         )
-        client = AsyncLoomal(api_key="loid-test")
+        client = AsyncMailgent(api_key="loid-test")
         result = await client.payments.get("pay-1")
         assert isinstance(result, PaymentDetail)
-        assert result.signed_receipt.did == "did:web:loomal.ai:identities:id-1"
+        assert result.signed_receipt.did == "did:web:mailgent.dev:identities:id-1"
         await client.close()

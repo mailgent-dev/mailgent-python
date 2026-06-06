@@ -1,4 +1,4 @@
-"""Tests for loomal.webhook.verify_webhook.
+"""Tests for mailgent.webhook.verify_webhook.
 
 Mirrors the four-test shape of the Node SDK's webhook tests so both
 SDKs behave identically against the same API output.
@@ -7,7 +7,7 @@ SDKs behave identically against the same API output.
 import hashlib
 import hmac
 
-from loomal.webhook import verify_webhook
+from mailgent.webhook import verify_webhook
 
 SECRET = "whsec_test_supersecret"
 

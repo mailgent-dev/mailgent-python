@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from loomal.types import IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse
+from mailgent.types import IdentitySummary, IdentityDetail, CreateIdentityResponse, RotateKeyResponse
 
 
 class PlatformIdentitiesResource:

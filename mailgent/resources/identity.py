@@ -1,5 +1,5 @@
 from __future__ import annotations
-from loomal.types import IdentityResponse
+from mailgent.types import IdentityResponse
 
 
 class IdentityResource:

@@ -1,6 +1,6 @@
-from loomal.client import Loomal, AsyncLoomal
-from loomal.platform_client import LoomalPlatform, AsyncLoomalPlatform
-from loomal.types import (
+from mailgent.client import Mailgent, AsyncMailgent
+from mailgent.platform_client import MailgentPlatform, AsyncMailgentPlatform
+from mailgent.types import (
     MessageResponse, ThreadResponse, ThreadDetailResponse,
     VaultCredentialType,
     ApiKeySecretData, ApiKeyClientPairData,
@@ -16,14 +16,14 @@ from loomal.types import (
     PaymentActivityIn, PaymentActivityOut, PaymentActivityRow, PaymentActivityList,
     Mandate, MandateCreateParams, MandateList,
 )
-from loomal._errors import LoomalError
+from mailgent._errors import MailgentApiError
 
 __version__ = "0.6.2"
 
 __all__ = [
-    "Loomal", "AsyncLoomal",
-    "LoomalPlatform", "AsyncLoomalPlatform",
-    "LoomalError",
+    "Mailgent", "AsyncMailgent",
+    "MailgentPlatform", "AsyncMailgentPlatform",
+    "MailgentApiError",
     "MessageResponse", "ThreadResponse", "ThreadDetailResponse",
     "VaultCredentialType",
     "ApiKeySecretData", "ApiKeyClientPairData",

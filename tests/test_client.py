@@ -1,17 +1,17 @@
 import os
 import pytest
-from loomal import Loomal, AsyncLoomal
-from loomal._errors import LoomalError
+from mailgent import Mailgent, AsyncMailgent
+from mailgent._errors import MailgentApiError
 
 
-class TestLoomalClient:
+class TestMailgentClient:
     def test_requires_api_key(self):
-        os.environ.pop("LOOMAL_API_KEY", None)
+        os.environ.pop("MAILGENT_API_KEY", None)
         with pytest.raises(ValueError, match="API key is required"):
-            Loomal()
+            Mailgent()
 
     def test_creates_with_api_key(self):
-        client = Loomal(api_key="loid-test123")
+        client = Mailgent(api_key="loid-test123")
         assert client.identity is not None
         assert client.mail is not None
         assert client.vault is not None
@@ -20,33 +20,33 @@ class TestLoomalClient:
         client.close()
 
     def test_reads_env_var(self):
-        os.environ["LOOMAL_API_KEY"] = "loid-fromenv"
+        os.environ["MAILGENT_API_KEY"] = "loid-fromenv"
         try:
-            client = Loomal()
+            client = Mailgent()
             assert client.identity is not None
             client.close()
         finally:
-            del os.environ["LOOMAL_API_KEY"]
+            del os.environ["MAILGENT_API_KEY"]
 
     def test_context_manager(self):
-        with Loomal(api_key="loid-test") as client:
+        with Mailgent(api_key="loid-test") as client:
             assert client.identity is not None
 
 
-class TestAsyncLoomalClient:
+class TestAsyncMailgentClient:
     def test_requires_api_key(self):
-        os.environ.pop("LOOMAL_API_KEY", None)
+        os.environ.pop("MAILGENT_API_KEY", None)
         with pytest.raises(ValueError, match="API key is required"):
-            AsyncLoomal()
+            AsyncMailgent()
 
 
-class TestLoomalError:
+class TestMailgentApiError:
     def test_attributes(self):
-        err = LoomalError(401, "unauthorized", "Invalid API key")
+        err = MailgentApiError(401, "unauthorized", "Invalid API key")
         assert err.status == 401
         assert err.code == "unauthorized"
         assert str(err) == "Invalid API key"
 
     def test_repr(self):
-        err = LoomalError(404, "not_found", "Not found")
+        err = MailgentApiError(404, "not_found", "Not found")
         assert "404" in repr(err)

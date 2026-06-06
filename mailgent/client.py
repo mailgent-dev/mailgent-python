@@ -3,27 +3,27 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from loomal._http import SyncHttpClient, AsyncHttpClient, DEFAULT_BASE_URL
-from loomal.resources.identity import IdentityResource, AsyncIdentityResource
-from loomal.resources.mail import MailResource, AsyncMailResource
-from loomal.resources.vault import VaultResource, AsyncVaultResource
-from loomal.resources.logs import LogsResource, AsyncLogsResource
-from loomal.resources.did import DidResource, AsyncDidResource
-from loomal.resources.calendar import CalendarResource, AsyncCalendarResource
-from loomal.resources.payments import PaymentsResource, AsyncPaymentsResource
+from mailgent._http import SyncHttpClient, AsyncHttpClient, DEFAULT_BASE_URL
+from mailgent.resources.identity import IdentityResource, AsyncIdentityResource
+from mailgent.resources.mail import MailResource, AsyncMailResource
+from mailgent.resources.vault import VaultResource, AsyncVaultResource
+from mailgent.resources.logs import LogsResource, AsyncLogsResource
+from mailgent.resources.did import DidResource, AsyncDidResource
+from mailgent.resources.calendar import CalendarResource, AsyncCalendarResource
+from mailgent.resources.payments import PaymentsResource, AsyncPaymentsResource
 
 
-class Loomal:
-    """Synchronous Loomal API client."""
+class Mailgent:
+    """Synchronous Mailgent API client."""
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None,
                  timeout: float = 30.0) -> None:
-        resolved_key = api_key or os.environ.get("LOOMAL_API_KEY")
+        resolved_key = api_key or os.environ.get("MAILGENT_API_KEY")
         if not resolved_key:
-            raise ValueError("API key is required. Pass api_key= or set LOOMAL_API_KEY env var.")
+            raise ValueError("API key is required. Pass api_key= or set MAILGENT_API_KEY env var.")
 
         http = SyncHttpClient(
-            base_url=base_url or os.environ.get("LOOMAL_API_URL", DEFAULT_BASE_URL),
+            base_url=base_url or os.environ.get("MAILGENT_API_URL", DEFAULT_BASE_URL),
             api_key=resolved_key, timeout=timeout,
         )
         self.identity = IdentityResource(http)
@@ -45,17 +45,17 @@ class Loomal:
         self.close()
 
 
-class AsyncLoomal:
-    """Asynchronous Loomal API client."""
+class AsyncMailgent:
+    """Asynchronous Mailgent API client."""
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None,
                  timeout: float = 30.0) -> None:
-        resolved_key = api_key or os.environ.get("LOOMAL_API_KEY")
+        resolved_key = api_key or os.environ.get("MAILGENT_API_KEY")
         if not resolved_key:
-            raise ValueError("API key is required. Pass api_key= or set LOOMAL_API_KEY env var.")
+            raise ValueError("API key is required. Pass api_key= or set MAILGENT_API_KEY env var.")
 
         http = AsyncHttpClient(
-            base_url=base_url or os.environ.get("LOOMAL_API_URL", DEFAULT_BASE_URL),
+            base_url=base_url or os.environ.get("MAILGENT_API_URL", DEFAULT_BASE_URL),
             api_key=resolved_key, timeout=timeout,
         )
         self.identity = AsyncIdentityResource(http)

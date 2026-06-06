@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from loomal.types import ActivityLog, LogsStats
+from mailgent.types import ActivityLog, LogsStats
 
 
 class LogsResource:

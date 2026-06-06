@@ -4,9 +4,9 @@ from typing import Any, Optional
 
 import httpx
 
-from loomal._errors import LoomalError
+from mailgent._errors import MailgentApiError
 
-DEFAULT_BASE_URL = "https://api.loomal.ai"
+DEFAULT_BASE_URL = "https://api.mailgent.dev"
 DEFAULT_TIMEOUT = 30.0
 
 
@@ -24,7 +24,7 @@ def _handle_response(response: httpx.Response) -> Any:
     data = response.json() if response.content else {}
 
     if not response.is_success:
-        raise LoomalError(
+        raise MailgentApiError(
             status=response.status_code,
             code=data.get("error", "unknown_error"),
             message=data.get("message", f"Request failed with status {response.status_code}"),

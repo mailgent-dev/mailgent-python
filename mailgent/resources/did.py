@@ -1,5 +1,5 @@
 from __future__ import annotations
-from loomal.types import DidDocument
+from mailgent.types import DidDocument
 
 
 class DidResource:

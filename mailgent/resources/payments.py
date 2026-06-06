@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from loomal._errors import LoomalError
-from loomal.types import (
+from mailgent._errors import MailgentApiError
+from mailgent.types import (
     Mandate,
     MandateList,
     PaymentActivityList,
@@ -14,12 +14,12 @@ from loomal.types import (
 
 
 class MandatesResource:
-    """Spend policy attached to your project's wallet. Loomal enforces the
+    """Spend policy attached to your project's wallet. Mailgent enforces the
     caps server-side on every ``payments.pay()`` call. First create takes
     10–30 seconds while the session key lands on Base. If ``installError``
     comes back set, the mandate is unusable — retry creation.
 
-    Mounted at ``loomal.payments.mandates``.
+    Mounted at ``mailgent.payments.mandates``.
     """
 
     def __init__(self, http):
@@ -82,48 +82,18 @@ class AsyncMandatesResource:
 
 
 class PaymentsResource:
-    """Synchronous ``loomal.payments`` resource.
+    """Synchronous ``mailgent.payments`` resource.
 
-    Wraps the payments REST endpoints. ``challenge``, ``redeem``, and
-    ``pay`` return raw dicts because the API responses are variant-shaped
-    (e.g. the pay response is either ``{ok: true, ...}`` or
-    ``{ok: false, code, ...}`` — branch on ``result["ok"]``).
+    Wraps the buyer payments REST endpoints. ``pay`` returns a raw dict
+    because the API response is variant-shaped (either ``{ok: true, ...}``
+    or ``{ok: false, code, ...}`` — branch on ``result["ok"]``).
 
-    Spend policy lives at ``loomal.payments.mandates``.
+    Spend policy lives at ``mailgent.payments.mandates``.
     """
 
     def __init__(self, http):
         self._http = http
         self.mandates = MandatesResource(http)
-
-    def challenge(
-        self,
-        amount: str,
-        resource: Optional[str] = None,
-        description: Optional[str] = None,
-        network: str = "base",
-    ) -> dict[str, Any]:
-        body: dict[str, Any] = {"amount": amount, "network": network}
-        if resource is not None: body["resource"] = resource
-        if description is not None: body["description"] = description
-        return self._http.post("/v0/payments/challenge", json=body)
-
-    def redeem(
-        self,
-        payment_header: str,
-        resource: str,
-        amount: str,
-        network: str = "base",
-        description: Optional[str] = None,
-    ) -> dict[str, Any]:
-        body: dict[str, Any] = {
-            "paymentHeader": payment_header,
-            "resource": resource,
-            "amount": amount,
-            "network": network,
-        }
-        if description is not None: body["description"] = description
-        return self._http.post("/v0/payments/redeem", json=body)
 
     def pay(self, url: str, dry_run: Optional[bool] = None) -> PaymentsPayResponse:
         """Pay any x402-protected URL. Drives the full handshake on your
@@ -137,7 +107,7 @@ class PaymentsResource:
         if dry_run is not None: body["dryRun"] = dry_run
         data = self._http.post_unchecked("/v0/payments/pay", json=body)
         if not isinstance(data, dict) or "ok" not in data:
-            raise LoomalError(
+            raise MailgentApiError(
                 status=0,
                 code="unexpected_response",
                 message="payments.pay returned a body without an `ok` discriminator",
@@ -167,48 +137,19 @@ class PaymentsResource:
 
 
 class AsyncPaymentsResource:
-    """Asynchronous ``loomal.payments`` resource. Same surface as
+    """Asynchronous ``mailgent.payments`` resource. Same surface as
     :class:`PaymentsResource` with ``await`` on each method."""
 
     def __init__(self, http):
         self._http = http
         self.mandates = AsyncMandatesResource(http)
 
-    async def challenge(
-        self,
-        amount: str,
-        resource: Optional[str] = None,
-        description: Optional[str] = None,
-        network: str = "base",
-    ) -> dict[str, Any]:
-        body: dict[str, Any] = {"amount": amount, "network": network}
-        if resource is not None: body["resource"] = resource
-        if description is not None: body["description"] = description
-        return await self._http.post("/v0/payments/challenge", json=body)
-
-    async def redeem(
-        self,
-        payment_header: str,
-        resource: str,
-        amount: str,
-        network: str = "base",
-        description: Optional[str] = None,
-    ) -> dict[str, Any]:
-        body: dict[str, Any] = {
-            "paymentHeader": payment_header,
-            "resource": resource,
-            "amount": amount,
-            "network": network,
-        }
-        if description is not None: body["description"] = description
-        return await self._http.post("/v0/payments/redeem", json=body)
-
     async def pay(self, url: str, dry_run: Optional[bool] = None) -> PaymentsPayResponse:
         body: dict[str, Any] = {"url": url}
         if dry_run is not None: body["dryRun"] = dry_run
         data = await self._http.post_unchecked("/v0/payments/pay", json=body)
         if not isinstance(data, dict) or "ok" not in data:
-            raise LoomalError(
+            raise MailgentApiError(
                 status=0,
                 code="unexpected_response",
                 message="payments.pay returned a body without an `ok` discriminator",
