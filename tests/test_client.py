@@ -11,7 +11,7 @@ class TestMailgentClient:
             Mailgent()
 
     def test_creates_with_api_key(self):
-        client = Mailgent(api_key="loid-test123")
+        client = Mailgent(api_key="mgnt-test123")
         assert client.identity is not None
         assert client.mail is not None
         assert client.vault is not None
@@ -20,7 +20,7 @@ class TestMailgentClient:
         client.close()
 
     def test_reads_env_var(self):
-        os.environ["MAILGENT_API_KEY"] = "loid-fromenv"
+        os.environ["MAILGENT_API_KEY"] = "mgnt-fromenv"
         try:
             client = Mailgent()
             assert client.identity is not None
@@ -29,7 +29,7 @@ class TestMailgentClient:
             del os.environ["MAILGENT_API_KEY"]
 
     def test_context_manager(self):
-        with Mailgent(api_key="loid-test") as client:
+        with Mailgent(api_key="mgnt-test") as client:
             assert client.identity is not None
 
 

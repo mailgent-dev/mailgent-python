@@ -30,7 +30,7 @@ class TestVaultStoreHelpers:
         route = respx.put("https://api.mailgent.dev/v0/vault/stripe").mock(
             return_value=httpx.Response(200, json=_STORED)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.vault.store_api_key("stripe", "sk_live_abc123")
         body = _body(route)
         assert body["type"] == "API_KEY"
@@ -43,7 +43,7 @@ class TestVaultStoreHelpers:
         route = respx.put("https://api.mailgent.dev/v0/vault/twitter").mock(
             return_value=httpx.Response(200, json=_STORED)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.vault.store_api_key("twitter", {"clientId": "abc123", "secret": "def456"})
         body = _body(route)
         assert body["type"] == "API_KEY"
@@ -56,7 +56,7 @@ class TestVaultStoreHelpers:
         route = respx.put("https://api.mailgent.dev/v0/vault/personal-visa").mock(
             return_value=httpx.Response(200, json={**_STORED, "type": "CARD"})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.vault.store_card("personal-visa", {
             "cardholder": "Jane Doe",
             "number": "4242 4242 4242 4242",
@@ -78,7 +78,7 @@ class TestVaultStoreHelpers:
         route = respx.put("https://api.mailgent.dev/v0/vault/home").mock(
             return_value=httpx.Response(200, json={**_STORED, "type": "SHIPPING_ADDRESS"})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.vault.store_shipping_address("home", {
             "name": "Autonomous Agent",
             "line1": "1 Demo Way",
@@ -100,7 +100,7 @@ class TestVaultStoreHelpers:
         route = respx.put("https://api.mailgent.dev/v0/vault/db").mock(
             return_value=httpx.Response(200, json={**_STORED, "type": "DATABASE"})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.vault.store("db", "DATABASE", {"password": "s3cr3t"}, metadata={"host": "db.example.com"})
         body = _body(route)
         assert body["type"] == "DATABASE"
@@ -113,7 +113,7 @@ class TestVaultTotpSync:
     def test_totp_includes_backup_codes_remaining(self):
         respx.get("https://api.mailgent.dev/v0/vault/github-2fa/totp").mock(
             return_value=httpx.Response(200, json={"code": "123456", "remaining": 22, "backupCodesRemaining": 4}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         res = client.vault.totp("github-2fa")
         assert res.code == "123456"
         assert res.remaining == 22
@@ -124,7 +124,7 @@ class TestVaultTotpSync:
     def test_totp_defaults_backup_codes_remaining_to_zero(self):
         respx.get("https://api.mailgent.dev/v0/vault/legacy/totp").mock(
             return_value=httpx.Response(200, json={"code": "654321", "remaining": 17}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         res = client.vault.totp("legacy")
         assert res.backup_codes_remaining == 0
         client.close()
@@ -133,7 +133,7 @@ class TestVaultTotpSync:
     def test_totp_use_backup_posts_and_returns_parsed_response(self):
         route = respx.post("https://api.mailgent.dev/v0/vault/github-2fa/totp/backup").mock(
             return_value=httpx.Response(200, json={"code": "bk-aaaa-1111", "remaining": 3}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         res = client.vault.totp_use_backup("github-2fa")
         assert res.code == "bk-aaaa-1111"
         assert res.remaining == 3
@@ -144,7 +144,7 @@ class TestVaultTotpSync:
     def test_totp_use_backup_accepts_arbitrary_text_codes(self):
         respx.post("https://api.mailgent.dev/v0/vault/x/totp/backup").mock(
             return_value=httpx.Response(200, json={"code": "letters-AND-123!", "remaining": 0}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         res = client.vault.totp_use_backup("x")
         assert res.code == "letters-AND-123!"
         assert res.remaining == 0
@@ -154,7 +154,7 @@ class TestVaultTotpSync:
     def test_totp_use_backup_raises_on_400(self):
         respx.post("https://api.mailgent.dev/v0/vault/drained/totp/backup").mock(
             return_value=httpx.Response(400, json={"error": "bad_request", "message": "No unused backup codes remaining"}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         with pytest.raises(MailgentApiError):
             client.vault.totp_use_backup("drained")
         client.close()
@@ -163,7 +163,7 @@ class TestVaultTotpSync:
     def test_totp_use_backup_raises_on_404(self):
         respx.post("https://api.mailgent.dev/v0/vault/missing/totp/backup").mock(
             return_value=httpx.Response(404, json={"error": "not_found", "message": "Credential not found"}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         with pytest.raises(MailgentApiError):
             client.vault.totp_use_backup("missing")
         client.close()
@@ -175,7 +175,7 @@ class TestVaultTotpAsync:
     async def test_totp_includes_backup_codes_remaining(self):
         respx.get("https://api.mailgent.dev/v0/vault/github-2fa/totp").mock(
             return_value=httpx.Response(200, json={"code": "123456", "remaining": 22, "backupCodesRemaining": 4}))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         res = await client.vault.totp("github-2fa")
         assert res.backup_codes_remaining == 4
         await client.close()
@@ -185,7 +185,7 @@ class TestVaultTotpAsync:
     async def test_totp_use_backup_posts(self):
         respx.post("https://api.mailgent.dev/v0/vault/github-2fa/totp/backup").mock(
             return_value=httpx.Response(200, json={"code": "bk-cccc-3333", "remaining": 1}))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         res = await client.vault.totp_use_backup("github-2fa")
         assert res.code == "bk-cccc-3333"
         assert res.remaining == 1
@@ -196,7 +196,7 @@ class TestVaultTotpAsync:
     async def test_totp_use_backup_raises_on_error(self):
         respx.post("https://api.mailgent.dev/v0/vault/drained/totp/backup").mock(
             return_value=httpx.Response(400, json={"error": "bad_request", "message": "No unused backup codes remaining"}))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         with pytest.raises(MailgentApiError):
             await client.vault.totp_use_backup("drained")
         await client.close()

@@ -20,7 +20,7 @@ class TestSlackResource:
                 "botUserId": "U456", "slackScopes": "chat:write,channels:read",
                 "installedAt": "2026-06-01T00:00:00Z",
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.connection()
         assert isinstance(result, SlackConnection)
         assert result.connected is True
@@ -34,7 +34,7 @@ class TestSlackResource:
     def test_connection_not_connected(self):
         respx.get("https://api.mailgent.dev/v0/slack/connection").mock(
             return_value=httpx.Response(200, json={"connected": False}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.connection()
         assert result.connected is False
         assert result.team_id is None
@@ -48,7 +48,7 @@ class TestSlackResource:
                 "expiresInSeconds": 600,
                 "message": "Open the install URL in a browser",
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.connect()
         assert isinstance(result, SlackConnectResponse)
         assert result.install_url.startswith("https://slack.com/oauth")
@@ -59,7 +59,7 @@ class TestSlackResource:
     def test_disconnect(self):
         respx.delete("https://api.mailgent.dev/v0/slack/connection").mock(
             return_value=httpx.Response(200, json={"message": "Slack disconnected"}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.disconnect()
         assert result["message"] == "Slack disconnected"
         client.close()
@@ -73,7 +73,7 @@ class TestSlackResource:
                     {"id": "C2", "name": "secret", "isPrivate": True, "botIsMember": False},
                 ],
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.list_channels()
         assert len(result["channels"]) == 2
         assert isinstance(result["channels"][0], SlackChannel)
@@ -86,7 +86,7 @@ class TestSlackResource:
     def test_send_message(self):
         route = respx.post("https://api.mailgent.dev/v0/slack/messages").mock(
             return_value=httpx.Response(201, json={"channel": "C1", "ts": "1718000000.000100"}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.send_message("#general", "Deploy finished")
         assert isinstance(result, SlackSendMessageResponse)
         assert result.channel == "C1"
@@ -100,7 +100,7 @@ class TestSlackResource:
     def test_send_message_in_thread(self):
         route = respx.post("https://api.mailgent.dev/v0/slack/messages").mock(
             return_value=httpx.Response(201, json={"channel": "C1", "ts": "1718000000.000200"}))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.slack.send_message("C1", "Reply", thread_ts="1718000000.000100")
         import json
         body = json.loads(route.calls.last.request.content)
@@ -117,7 +117,7 @@ class TestSlackResource:
                     "eventType": "message", "receivedAt": "2026-06-10T00:00:00Z",
                 }],
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.slack.list_messages(channel="C1", limit=10)
         assert len(result["messages"]) == 1
         msg = result["messages"][0]
@@ -128,14 +128,14 @@ class TestSlackResource:
         client.close()
 
     def test_client_has_slack(self):
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         assert client.slack is not None
         client.close()
 
 
 class TestAsyncSlackResource:
     def test_async_client_has_slack(self):
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         assert client.slack is not None
 
     @respx.mock
@@ -143,7 +143,7 @@ class TestAsyncSlackResource:
     async def test_send_message_async(self):
         respx.post("https://api.mailgent.dev/v0/slack/messages").mock(
             return_value=httpx.Response(201, json={"channel": "C1", "ts": "1718000000.000100"}))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.slack.send_message("#general", "hi")
         assert result.ts == "1718000000.000100"
         await client.close()
@@ -155,7 +155,7 @@ class TestAsyncSlackResource:
             return_value=httpx.Response(200, json={
                 "channels": [{"id": "C1", "name": "general", "isPrivate": False, "botIsMember": True}],
             }))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.slack.list_channels()
         assert result["channels"][0].id == "C1"
         await client.close()

@@ -15,7 +15,7 @@ class TestSocialResource:
                     "displayName": "Mailgent", "connectedAt": "2026-06-01T00:00:00Z",
                 }],
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.social.list_accounts()
         assert len(result["accounts"]) == 1
         acc = result["accounts"][0]
@@ -31,7 +31,7 @@ class TestSocialResource:
                 "postId": "post-1", "status": "published",
                 "accounts": ["acc-1"], "message": "Posted to 1 account",
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.social.create_post("We just shipped v2!")
         assert isinstance(result, CreateSocialPostResponse)
         assert result.post_id == "post-1"
@@ -49,7 +49,7 @@ class TestSocialResource:
                 "postId": "post-2", "status": "scheduled",
                 "accounts": ["acc-1", "acc-2"], "message": "Scheduled",
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.social.create_post(
             "Launch day!",
             platforms=["twitter", "linkedin"],
@@ -71,7 +71,7 @@ class TestSocialResource:
             return_value=httpx.Response(200, json={
                 "posts": [{"postId": "post-1", "status": "published"}],
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.social.list_posts(limit=5)
         assert len(result["posts"]) == 1
         assert result["posts"][0]["postId"] == "post-1"
@@ -84,21 +84,21 @@ class TestSocialResource:
                 "post": {"postId": "post-1", "status": "published"},
                 "results": [{"accountId": "acc-1", "status": "ok"}],
             }))
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.social.get_post("post-1")
         assert result["post"]["postId"] == "post-1"
         assert result["results"][0]["status"] == "ok"
         client.close()
 
     def test_client_has_social(self):
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         assert client.social is not None
         client.close()
 
 
 class TestAsyncSocialResource:
     def test_async_client_has_social(self):
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         assert client.social is not None
 
     @respx.mock
@@ -109,7 +109,7 @@ class TestAsyncSocialResource:
                 "postId": "post-1", "status": "published",
                 "accounts": ["acc-1"], "message": "Posted",
             }))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.social.create_post("hello")
         assert result.post_id == "post-1"
         await client.close()
@@ -122,7 +122,7 @@ class TestAsyncSocialResource:
                 "accounts": [{"id": "acc-1", "platform": "linkedin", "username": "mg",
                               "displayName": "MG", "connectedAt": "2026-06-01T00:00:00Z"}],
             }))
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.social.list_accounts()
         assert result["accounts"][0].platform == "linkedin"
         await client.close()

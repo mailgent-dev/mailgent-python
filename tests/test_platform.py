@@ -13,12 +13,12 @@ class TestMailgentPlatformClient:
             MailgentPlatform()
 
     def test_creates_with_api_key(self):
-        client = MailgentPlatform(api_key="lopk-test123")
+        client = MailgentPlatform(api_key="mgpk-test123")
         assert client.identities is not None
         client.close()
 
     def test_reads_env_var(self):
-        os.environ["MAILGENT_PLATFORM_KEY"] = "lopk-fromenv"
+        os.environ["MAILGENT_PLATFORM_KEY"] = "mgpk-fromenv"
         try:
             client = MailgentPlatform()
             assert client.identities is not None
@@ -27,7 +27,7 @@ class TestMailgentPlatformClient:
             del os.environ["MAILGENT_PLATFORM_KEY"]
 
     def test_context_manager(self):
-        with MailgentPlatform(api_key="lopk-test") as client:
+        with MailgentPlatform(api_key="mgpk-test") as client:
             assert client.identities is not None
 
 
@@ -48,7 +48,7 @@ class TestPlatformIdentitiesResource:
                 "apiKeyPrefix": "loid-abc1", "rawKey": "loid-abc123",
                 "createdAt": "2026-01-01T00:00:00Z",
             }))
-        client = MailgentPlatform(api_key="lopk-test")
+        client = MailgentPlatform(api_key="mgpk-test")
         result = client.identities.create(name="Agent", email_name="agent", scopes=["mail:read"])
         assert isinstance(result, CreateIdentityResponse)
         assert result.identity_id == "id-123"
@@ -64,7 +64,7 @@ class TestPlatformIdentitiesResource:
                                 "usageCount": 5, "lastUsedAt": None, "createdAt": "2026-01-01T00:00:00Z"}],
                 "count": 1,
             }))
-        client = MailgentPlatform(api_key="lopk-test")
+        client = MailgentPlatform(api_key="mgpk-test")
         result = client.identities.list()
         assert result["count"] == 1
         assert len(result["identities"]) == 1
@@ -79,7 +79,7 @@ class TestPlatformIdentitiesResource:
                 "email": "a@b.dev", "scopes": ["mail:read"], "apiKeyPrefix": "loid-abc1",
                 "usageCount": 5, "lastUsedAt": None, "createdAt": "2026-01-01T00:00:00Z",
             }))
-        client = MailgentPlatform(api_key="lopk-test")
+        client = MailgentPlatform(api_key="mgpk-test")
         result = client.identities.get("id-123")
         assert isinstance(result, IdentityDetail)
         assert result.api_key_prefix == "loid-abc1"
@@ -89,7 +89,7 @@ class TestPlatformIdentitiesResource:
     def test_delete(self):
         respx.delete("https://api.mailgent.dev/v0/platform/identities/id-123").mock(
             return_value=httpx.Response(204))
-        client = MailgentPlatform(api_key="lopk-test")
+        client = MailgentPlatform(api_key="mgpk-test")
         assert client.identities.delete("id-123") is None
         client.close()
 
@@ -99,7 +99,7 @@ class TestPlatformIdentitiesResource:
             return_value=httpx.Response(200, json={
                 "rawKey": "loid-newkey123", "apiKeyPrefix": "loid-newk",
             }))
-        client = MailgentPlatform(api_key="lopk-test")
+        client = MailgentPlatform(api_key="mgpk-test")
         result = client.identities.rotate_key("id-123")
         assert isinstance(result, RotateKeyResponse)
         assert result.raw_key.startswith("loid-")
@@ -109,7 +109,7 @@ class TestPlatformIdentitiesResource:
     def test_sends_platform_key_in_header(self):
         route = respx.get("https://api.mailgent.dev/v0/platform/identities").mock(
             return_value=httpx.Response(200, json={"identities": [], "count": 0}))
-        client = MailgentPlatform(api_key="lopk-mysecret")
+        client = MailgentPlatform(api_key="mgpk-mysecret")
         client.identities.list()
-        assert route.calls[0].request.headers["authorization"] == "Bearer lopk-mysecret"
+        assert route.calls[0].request.headers["authorization"] == "Bearer mgpk-mysecret"
         client.close()

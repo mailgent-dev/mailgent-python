@@ -111,7 +111,7 @@ DETAIL_BODY = {
 
 class TestPaymentsResource:
     def test_client_has_payments_resource(self):
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         assert client.payments is not None
         client.close()
 
@@ -120,7 +120,7 @@ class TestPaymentsResource:
         respx.get("https://api.mailgent.dev/v0/payments").mock(
             return_value=httpx.Response(200, json={"payments": [LIST_ROW], "count": 1})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.payments.list()
 
         assert result["count"] == 1
@@ -133,7 +133,7 @@ class TestPaymentsResource:
         route = respx.get("https://api.mailgent.dev/v0/payments").mock(
             return_value=httpx.Response(200, json={"payments": [], "count": 0})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.payments.list(limit=50)
 
         assert "limit=50" in str(route.calls[0].request.url)
@@ -144,7 +144,7 @@ class TestPaymentsResource:
         route = respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.payments.pay(url="https://api.example.com/search")
 
         assert result["ok"] is True
@@ -162,7 +162,7 @@ class TestPaymentsResource:
         respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(402, json=PAY_FAILURE_BODY)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.payments.pay(url="https://api.example.com/search")
 
         assert result["ok"] is False
@@ -175,7 +175,7 @@ class TestPaymentsResource:
         route = respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.payments.pay(url="https://api.example.com/search", dry_run=True)
 
         body = json.loads(route.calls[0].request.content)
@@ -187,7 +187,7 @@ class TestPaymentsResource:
         respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(401, json={"error": "unauthorized", "message": "missing scope"})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         with pytest.raises(MailgentApiError, match="discriminator"):
             client.payments.pay(url="https://api.example.com/search")
         client.close()
@@ -197,7 +197,7 @@ class TestPaymentsResource:
         route = respx.get("https://api.mailgent.dev/v0/payments/activity").mock(
             return_value=httpx.Response(200, json=ACTIVITY_BODY)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.payments.activity()
 
         assert result["count"] == 2
@@ -212,7 +212,7 @@ class TestPaymentsResource:
         route = respx.get("https://api.mailgent.dev/v0/payments/activity").mock(
             return_value=httpx.Response(200, json={"activity": [], "count": 0})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         client.payments.activity(limit=25)
 
         assert "limit=25" in str(route.calls[0].request.url)
@@ -241,7 +241,7 @@ class TestPaymentsResource:
         route = respx.post("https://api.mailgent.dev/v0/payments/mandates").mock(
             return_value=httpx.Response(200, json=body)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         m = client.payments.mandates.create(
             max_per_call_usdc="0.10",
             daily_cap_usdc="1.00",
@@ -261,7 +261,7 @@ class TestPaymentsResource:
         respx.get("https://api.mailgent.dev/v0/payments/mandates").mock(
             return_value=httpx.Response(200, json={"mandates": []})
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.payments.mandates.list()
         assert result == {"mandates": []}
         client.close()
@@ -274,7 +274,7 @@ class TestPaymentsResource:
         delete_route = respx.delete("https://api.mailgent.dev/v0/payments/mandates/m_abc").mock(
             return_value=httpx.Response(204)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         m = client.payments.mandates.get("m_abc")
         assert m["mandateId"] == "m_abc"
         client.payments.mandates.revoke("m_abc")
@@ -288,7 +288,7 @@ class TestPaymentsResource:
         respx.get("https://api.mailgent.dev/v0/payments/pay-1").mock(
             return_value=httpx.Response(200, json=DETAIL_BODY)
         )
-        client = Mailgent(api_key="loid-test")
+        client = Mailgent(api_key="mgnt-test")
         result = client.payments.get("pay-1")
 
         assert isinstance(result, PaymentDetail)
@@ -301,7 +301,7 @@ class TestPaymentsResource:
 
 class TestAsyncPaymentsResource:
     def test_async_client_has_payments_resource(self):
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         assert client.payments is not None
 
     @respx.mock
@@ -310,7 +310,7 @@ class TestAsyncPaymentsResource:
         respx.post("https://api.mailgent.dev/v0/payments/pay").mock(
             return_value=httpx.Response(200, json=PAY_SUCCESS_BODY)
         )
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.payments.pay(url="https://api.example.com/search")
         assert result["ok"] is True
         assert result["txHash"] == "0xtxhash"
@@ -322,7 +322,7 @@ class TestAsyncPaymentsResource:
         respx.get("https://api.mailgent.dev/v0/payments/activity").mock(
             return_value=httpx.Response(200, json=ACTIVITY_BODY)
         )
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.payments.activity(limit=10)
         assert result["count"] == 2
         await client.close()
@@ -333,7 +333,7 @@ class TestAsyncPaymentsResource:
         respx.get("https://api.mailgent.dev/v0/payments/pay-1").mock(
             return_value=httpx.Response(200, json=DETAIL_BODY)
         )
-        client = AsyncMailgent(api_key="loid-test")
+        client = AsyncMailgent(api_key="mgnt-test")
         result = await client.payments.get("pay-1")
         assert isinstance(result, PaymentDetail)
         assert result.signed_receipt.did == "did:web:mailgent.dev:identities:id-1"

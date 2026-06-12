@@ -65,7 +65,7 @@ async def webhook(request: Request):
 ```python
 from mailgent import Mailgent
 
-client = Mailgent(api_key="loid-...")
+client = Mailgent(api_key="mgnt-...")
 
 me = client.identity.whoami()
 print(me.email)
@@ -82,7 +82,7 @@ client.mail.send(
 ```python
 from mailgent import AsyncMailgent
 
-async with AsyncMailgent(api_key="loid-...") as client:
+async with AsyncMailgent(api_key="mgnt-...") as client:
     me = await client.identity.whoami()
     await client.mail.send(
         to=["colleague@example.com"],
@@ -97,11 +97,11 @@ Pass your API key directly, or set the `MAILGENT_API_KEY` environment variable:
 
 ```python
 # Explicit
-client = Mailgent(api_key="loid-...")
+client = Mailgent(api_key="mgnt-...")
 
 # From environment
 import os
-os.environ["MAILGENT_API_KEY"] = "loid-..."
+os.environ["MAILGENT_API_KEY"] = "mgnt-..."
 client = Mailgent()
 ```
 
