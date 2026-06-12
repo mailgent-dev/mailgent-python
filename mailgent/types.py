@@ -514,6 +514,123 @@ class PaymentDetail:
         )
 
 
+@dataclass
+class SlackConnection:
+    """Status of the project's Slack workspace connection."""
+    connected: bool
+    team_id: Optional[str] = None
+    team_name: Optional[str] = None
+    bot_user_id: Optional[str] = None
+    slack_scopes: Optional[str] = None
+    installed_at: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SlackConnection:
+        return cls(
+            connected=data["connected"], team_id=data.get("teamId"),
+            team_name=data.get("teamName"), bot_user_id=data.get("botUserId"),
+            slack_scopes=data.get("slackScopes"), installed_at=data.get("installedAt"),
+        )
+
+
+@dataclass
+class SlackConnectResponse:
+    """Short-lived OAuth install link — open ``install_url`` in a browser to
+    connect a Slack workspace."""
+    install_url: str
+    expires_in_seconds: int
+    message: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SlackConnectResponse:
+        return cls(
+            install_url=data["installUrl"],
+            expires_in_seconds=data["expiresInSeconds"],
+            message=data["message"],
+        )
+
+
+@dataclass
+class SlackChannel:
+    id: str
+    name: str
+    is_private: bool
+    bot_is_member: bool
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SlackChannel:
+        return cls(
+            id=data["id"], name=data["name"],
+            is_private=data.get("isPrivate", False),
+            bot_is_member=data.get("botIsMember", False),
+        )
+
+
+@dataclass
+class SlackSendMessageResponse:
+    """Acknowledgement for a sent Slack message — ``ts`` doubles as the
+    thread anchor for replies."""
+    channel: str
+    ts: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SlackSendMessageResponse:
+        return cls(channel=data["channel"], ts=data["ts"])
+
+
+@dataclass
+class SlackMessage:
+    id: str
+    channel_id: str
+    user_id: str
+    text: str
+    ts: str
+    thread_ts: Optional[str]
+    event_type: str
+    received_at: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SlackMessage:
+        return cls(
+            id=data["id"], channel_id=data["channelId"], user_id=data["userId"],
+            text=data.get("text", ""), ts=data["ts"], thread_ts=data.get("threadTs"),
+            event_type=data["eventType"], received_at=data["receivedAt"],
+        )
+
+
+@dataclass
+class SocialAccount:
+    """A social media account connected via the console."""
+    id: str
+    platform: str
+    username: str
+    display_name: str
+    connected_at: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SocialAccount:
+        return cls(
+            id=data["id"], platform=data["platform"],
+            username=data.get("username", ""), display_name=data.get("displayName", ""),
+            connected_at=data["connectedAt"],
+        )
+
+
+@dataclass
+class CreateSocialPostResponse:
+    post_id: str
+    status: str
+    accounts: list[Any]
+    message: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> CreateSocialPostResponse:
+        return cls(
+            post_id=data["postId"], status=data["status"],
+            accounts=data.get("accounts", []), message=data.get("message", ""),
+        )
+
+
 # --- x402 buyer-side: pay() params, error codes, and response shape ---
 #
 # Returned as a dict (not a dataclass) to preserve the discriminated-union

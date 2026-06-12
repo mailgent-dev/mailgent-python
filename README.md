@@ -158,6 +158,53 @@ client.vault.store_shipping_address("home", {
 
 Supported credential types: `LOGIN`, `API_KEY`, `OAUTH`, `TOTP`, `SSH_KEY`, `DATABASE`, `SMTP`, `AWS`, `CERTIFICATE`, `CARD`, `SHIPPING_ADDRESS`, `CUSTOM`.
 
+### Slack
+
+Bridge your agent into a Slack workspace. Connect once via OAuth, then send and read messages (scopes: `slack:read` / `slack:send`).
+
+```python
+# One-time setup: open the install link in a browser
+link = client.slack.connect()
+print(link.install_url)
+
+# Check the connection
+conn = client.slack.connection()
+print(conn.connected, conn.team_name)
+
+# Find a channel and send a message
+channels = client.slack.list_channels()["channels"]
+ack = client.slack.send_message("#general", "Deploy finished ✅")
+
+# Reply in a thread
+client.slack.send_message("#general", "Logs attached.", thread_ts=ack.ts)
+
+# Read messages received by the bot
+messages = client.slack.list_messages(channel="#general", limit=20)["messages"]
+```
+
+### Social
+
+Post to connected social media accounts (scopes: `social:read` / `social:write`). Accounts are connected in the [console](https://console.mailgent.dev) — there is no connect endpoint.
+
+```python
+# See what's connected
+accounts = client.social.list_accounts()["accounts"]
+
+# Post everywhere (omit account_ids/platforms to target every account)
+post = client.social.create_post("We just shipped v2! 🚀")
+
+# Target specific platforms, attach media, or schedule for later
+client.social.create_post(
+    "Launch day!",
+    platforms=["twitter", "linkedin"],
+    media_urls=["https://example.com/banner.png"],
+    scheduled_at="2026-07-01T09:00:00Z",
+)
+
+# Check delivery results
+detail = client.social.get_post(post.post_id)
+```
+
 ### More resources
 
 The SDK also exposes `client.mail`, `client.calendar`, `client.logs`, and `client.did`. See the full reference at **[docs.mailgent.dev](https://docs.mailgent.dev)** for request/response shapes, pagination, and end-to-end examples.
@@ -193,6 +240,11 @@ The SDK returns typed dataclasses, not raw dictionaries. API responses are autom
 | `LogsStats` | Aggregated log statistics |
 | `TotpResponse` | Generated TOTP code |
 | `DidDocument` | DID document |
+| `SlackConnection` | Slack workspace connection status |
+| `SlackChannel` | Slack channel visible to the bot |
+| `SlackMessage` | Slack message received by the bot |
+| `SocialAccount` | Connected social media account |
+| `CreateSocialPostResponse` | Result of creating a social post |
 
 > **Note:** The `from` field in message responses is exposed as `from_addrs` since `from` is a reserved keyword in Python.
 

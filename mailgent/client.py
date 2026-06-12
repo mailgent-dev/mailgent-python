@@ -11,6 +11,8 @@ from mailgent.resources.logs import LogsResource, AsyncLogsResource
 from mailgent.resources.did import DidResource, AsyncDidResource
 from mailgent.resources.calendar import CalendarResource, AsyncCalendarResource
 from mailgent.resources.payments import PaymentsResource, AsyncPaymentsResource
+from mailgent.resources.slack import SlackResource, AsyncSlackResource
+from mailgent.resources.social import SocialResource, AsyncSocialResource
 
 
 class Mailgent:
@@ -33,6 +35,8 @@ class Mailgent:
         self.did = DidResource(http)
         self.calendar = CalendarResource(http)
         self.payments = PaymentsResource(http)
+        self.slack = SlackResource(http)
+        self.social = SocialResource(http)
         self._http = http
 
     def close(self) -> None:
@@ -65,6 +69,8 @@ class AsyncMailgent:
         self.did = AsyncDidResource(http)
         self.calendar = AsyncCalendarResource(http)
         self.payments = AsyncPaymentsResource(http)
+        self.slack = AsyncSlackResource(http)
+        self.social = AsyncSocialResource(http)
         self._http = http
 
     async def close(self) -> None:

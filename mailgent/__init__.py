@@ -15,6 +15,9 @@ from mailgent.types import (
     PaymentsPayParams, PaymentsPaySuccess, PaymentsPayFailure, PaymentsPayResponse,
     PaymentActivityIn, PaymentActivityOut, PaymentActivityRow, PaymentActivityList,
     Mandate, MandateCreateParams, MandateList,
+    SlackConnection, SlackConnectResponse, SlackChannel,
+    SlackSendMessageResponse, SlackMessage,
+    SocialAccount, CreateSocialPostResponse,
 )
 from mailgent._errors import MailgentApiError
 
@@ -38,4 +41,7 @@ __all__ = [
     "PaymentsPayParams", "PaymentsPaySuccess", "PaymentsPayFailure", "PaymentsPayResponse",
     "PaymentActivityIn", "PaymentActivityOut", "PaymentActivityRow", "PaymentActivityList",
     "Mandate", "MandateCreateParams", "MandateList",
+    "SlackConnection", "SlackConnectResponse", "SlackChannel",
+    "SlackSendMessageResponse", "SlackMessage",
+    "SocialAccount", "CreateSocialPostResponse",
 ]
