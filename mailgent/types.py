@@ -521,7 +521,7 @@ class SlackConnection:
     team_id: Optional[str] = None
     team_name: Optional[str] = None
     bot_user_id: Optional[str] = None
-    slack_scopes: Optional[str] = None
+    slack_scopes: Optional[list[str]] = None
     installed_at: Optional[str] = None
 
     @classmethod
