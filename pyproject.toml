@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mailgent-sdk"
-version = "0.7.0"
+version = "0.7.1"
 description = "Official Python SDK for the Mailgent API — identity, mail, vault, calendar, and buyer x402 payments for AI agents"
 readme = "README.md"
 requires-python = ">=3.9"

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1
+
+### Changed
+- API key examples now use the Mailgent-branded prefixes: identity keys `mgnt-` (was `loid-`), platform keys `mgpk-` (was `lopk-`).
+
+### Notes
+- **Existing `loid-`/`lopk-` keys keep working** — both old and new prefixes are accepted, no migration needed.
+
 ## 0.7.0 — 2026-06-12
 
 ### Added
